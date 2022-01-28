@@ -1,0 +1,142 @@
+from aiogram import types
+from aiogram.dispatcher import FSMContext
+from aiogram.dispatcher.filters.state import State, StatesGroup
+from main import *
+from keyboards.inline.keyboards import *
+
+
+class FSMAannouncement(StatesGroup):
+    type_of_services = State()
+    job_title = State()
+    job_description = State()
+    salary = State()
+    phone = State()
+    print('Start объявления')
+
+
+@dp.callback_query_handler(lambda c: c.data == 'create')
+async def cm_start1(callback_query: types.CallbackQuery):
+    await FSMAannouncement.type_of_services.set()
+    await callback_query.message.edit_text('Выбрать тип работы(потом будет на кнопках)')
+    await callback_query.message.edit_reply_markup(reply_markup=await add_announcement())
+
+
+@dp.message_handler(state=FSMAannouncement.type_of_services)
+async def load_type_work(message: types.Message, state: FSMContext):
+    await state.update_data(type_of_services=message.text)
+    await FSMAannouncement.next()
+    await message.answer('Введите название вакансии')
+
+
+# @dp.message_handler(state=FSMAannouncement.job_title)
+# async def load_job_title(message: types.Message, state: FSMContext):
+#     async with state.proxy() as data:
+#         data['job_title'] = message.text
+#     await FSMAannouncement.next()
+#     await message.answer('Введите описание вакансии')
+
+@dp.message_handler(state=FSMAannouncement.job_title)
+async def load_job_title_invalid(message: types.Message, state: FSMContext):
+    print(len(message.text) > 55, 'not ok')
+    if len(message.text) <= 55:
+        async with state.proxy() as data:
+            data['job_title'] = message.text
+        await FSMAannouncement.next()
+        await message.answer('Введите описание вакансии')
+    else:
+        await message.answer('huevo')
+    await message.answer('Слишком большое описание.Не более 55 символов')
+
+
+@dp.message_handler(state=FSMAannouncement.job_description)
+async def load_job_description(message: types.Message, state: FSMContext):
+    print(len(message.text) > 55, 'ok')
+    async with state.proxy() as data:
+        data['job_description'] = message.text
+    await FSMAannouncement.next()
+    await message.answer('ЗП(подсказка: "20 в день, 10 в час, 600 за 21 день")')
+
+
+@dp.message_handler(state=FSMAannouncement.salary)
+async def load_salary(message: types.Message, state: FSMContext):
+    async with state.proxy() as data:
+        data['salary'] = message.text
+    await FSMAannouncement.next()
+    await message.answer('Номер телефона')
+
+
+@dp.message_handler(lambda message: not message.text[1:].isdigit(), state=FSMAannouncement.phone)
+async def load_phone_invalid(message: types.Message):
+    return await message.reply("Номер должен быть формата: +375297642930!!")
+
+
+@dp.message_handler(lambda message: message.text[1:].isdigit(), state=FSMAannouncement.phone)
+async def load_phone(message: types.Message, state: FSMContext):
+    print(message.text)
+    async with state.proxy() as data:
+        data['phone'] = message.text
+    await message.answer('Обьявление добавлено')
+    print(data)
+    db.add_announcements(data['type_of_services'], data['job_title'], data['job_description'], data['salary'],
+                         data['phone'], user_id=message.from_user.id)
+    await state.finish()
+
+
+class FSMresume(StatesGroup):
+    name = State()
+    skills = State()
+    area_of_residence = State()
+    phone = State()
+    print('Start Резюме')
+
+
+@dp.callback_query_handler(lambda c: c.data == 'edit_one')
+async def cm_start(callback_query: types.CallbackQuery):
+    await FSMresume.name.set()
+    await callback_query.message.edit_text(text="Введите Ваше Имя:")
+
+
+@dp.message_handler(state=FSMresume.name)
+async def load_type_work(message: types.Message, state: FSMContext):
+    async with state.proxy() as data:
+        data['name'] = message.text
+    await FSMresume.next()
+    await message.answer('Опишите Ваши навыки:')
+
+
+@dp.message_handler(state=FSMresume.skills)
+async def load_job_title(message: types.Message, state: FSMContext):
+    async with state.proxy() as data:
+        data['skills'] = message.text
+    await FSMresume.next()
+    await message.answer('Ваш район проживания:')
+
+
+@dp.message_handler(state=FSMresume.area_of_residence)
+async def load_job_description(message: types.Message, state: FSMContext):
+    async with state.proxy() as data:
+        data['area_of_residence'] = message.text
+    await FSMresume.next()
+    await message.answer('Ваш номер телефона:')
+
+
+@dp.message_handler(lambda message: not message.text[1:].isdigit(), state=FSMresume)
+async def load_phone_invalid(message: types):
+    return await message.reply("Номер должен быть формата: +375297642930!!")
+
+
+@dp.message_handler(lambda message: message.text[1:].isdigit(), state=FSMresume.phone)
+async def load_phone(message: types.Message, state: FSMContext):
+    async with state.proxy() as data:
+        data['phone'] = message.text
+    await message.answer('Резюме добавлено')
+    data = {
+        True: db.update_resume_my,
+        False: db.add_resume
+    }
+    await data[bool(db.get_resume_my(message.from_user.id))](data['name'], data['skills'], data['area_of_residence'], data['phone'], user_id=message.from_user.id)
+    # if db.get_resume_my(message.from_user.id):
+    #     db.update_resume_my(data['name'], data['skills'], data['area_of_residence'], data['phone'], user_id=message.from_user.id)
+    # else:
+    #     db.add_resume(data['name'], data['skills'], data['area_of_residence'], data['phone'], user_id=message.from_user.id)
+    await state.finish()
