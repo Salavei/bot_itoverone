@@ -27,6 +27,5 @@ async def approve_start_end_my_resume(call: types.CallbackQuery):
 
 @dp.callback_query_handler(lambda call: 'stop_start_an_' in call.data)
 async def approve_announcement_user(call: types.CallbackQuery):
-    print(not db.check_announcements(call.data.split('_')[-1]), 'calll')
     db.update_announcements(call.data.split('_')[-1], not db.check_announcements(call.data.split('_')[-1]))
     await call.message.edit_text(text="Апрув")

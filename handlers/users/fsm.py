@@ -3,6 +3,7 @@ from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters.state import State, StatesGroup
 from main import *
 from keyboards.inline.keyboards import *
+from handlers.callback.callback_handler import *
 
 
 class FSMAannouncement(StatesGroup):
@@ -21,40 +22,35 @@ async def cm_start1(callback_query: types.CallbackQuery):
     await callback_query.message.edit_reply_markup(reply_markup=await add_announcement())
 
 
-@dp.message_handler(state=FSMAannouncement.type_of_services)
-async def load_type_work(message: types.Message, state: FSMContext):
-    await state.update_data(type_of_services=message.text)
+@dp.callback_query_handler(lambda call: "work" or "so_work" in call.data, state=FSMAannouncement.type_of_services)
+async def choice_work_user(call: types.CallbackQuery, state: FSMContext):
+    # добавить проверку на то, точно ли work or so_work , а не текст с клавы
+    choice = {
+        'work': 'Работа',
+        'so_work': 'Подработка'
+    }
+    await state.update_data(type_of_services=choice[call.data])
     await FSMAannouncement.next()
-    await message.answer('Введите название вакансии')
+    await call.message.edit_text(text="Введите название вакансии")
 
-
-# @dp.message_handler(state=FSMAannouncement.job_title)
-# async def load_job_title(message: types.Message, state: FSMContext):
-#     async with state.proxy() as data:
-#         data['job_title'] = message.text
-#     await FSMAannouncement.next()
-#     await message.answer('Введите описание вакансии')
 
 @dp.message_handler(state=FSMAannouncement.job_title)
 async def load_job_title_invalid(message: types.Message, state: FSMContext):
-    print(len(message.text) > 55, 'not ok')
-    if len(message.text) <= 55:
-        async with state.proxy() as data:
-            data['job_title'] = message.text
-        await FSMAannouncement.next()
-        await message.answer('Введите описание вакансии')
-    else:
-        await message.answer('huevo')
-    await message.answer('Слишком большое описание.Не более 55 символов')
+    async with state.proxy() as data:
+        data['job_title'] = message.text
+    await FSMAannouncement.next()
+    await message.answer('Введите описание вакансии')
 
 
 @dp.message_handler(state=FSMAannouncement.job_description)
 async def load_job_description(message: types.Message, state: FSMContext):
-    print(len(message.text) > 55, 'ok')
-    async with state.proxy() as data:
-        data['job_description'] = message.text
-    await FSMAannouncement.next()
-    await message.answer('ЗП(подсказка: "20 в день, 10 в час, 600 за 21 день")')
+    if len(message.text) <= 55:
+        async with state.proxy() as data:
+            data['job_description'] = message.text
+        await FSMAannouncement.next()
+        await message.answer('ЗП(подсказка: "20 в день, 10 в час, 600 за 21 день")')
+    else:
+        await message.answer('Слишком большое описание.Не более 55 символов')
 
 
 @dp.message_handler(state=FSMAannouncement.salary)
@@ -72,11 +68,9 @@ async def load_phone_invalid(message: types.Message):
 
 @dp.message_handler(lambda message: message.text[1:].isdigit(), state=FSMAannouncement.phone)
 async def load_phone(message: types.Message, state: FSMContext):
-    print(message.text)
     async with state.proxy() as data:
         data['phone'] = message.text
     await message.answer('Обьявление добавлено')
-    print(data)
     db.add_announcements(data['type_of_services'], data['job_title'], data['job_description'], data['salary'],
                          data['phone'], user_id=message.from_user.id)
     await state.finish()
@@ -134,5 +128,6 @@ async def load_phone(message: types.Message, state: FSMContext):
         True: db.update_resume_my,
         False: db.add_resume
     }
-    await data[bool(db.get_resume_my(message.from_user.id))](data['name'], data['skills'], data['area_of_residence'], data['phone'], user_id=message.from_user.id)
+    await data[bool(db.get_resume_my(message.from_user.id))](data['name'], data['skills'], data['area_of_residence'],
+                                                             data['phone'], user_id=message.from_user.id)
     await state.finish()

@@ -25,7 +25,7 @@ async def all_my_announcement(bot, message: types.Message):
 
 async def my_announcement(bot, message: types.Message):
     if len(db.get_announcements_my(message.from_user.id)) == 0:
-        await bot.send_message(message.from_user.id, f'Нужно создать объявление', reply_markup=await get_announce_edit())
+        await bot.send_message(message.from_user.id, f'Нужно создать объявление', reply_markup=await get_announce_create())
     else:
         for unp in db.get_announcements_my(message.from_user.id):
             id, type_of_services, job_title, job_description, salary, phone, allow, _, _ = unp
