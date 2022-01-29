@@ -114,13 +114,19 @@ class SQLighter:
         with self.connection:
             return self.cursor.execute("UPDATE `tg_my_resume` SET `allow` = ?, `allow_admin` = ? WHERE `id` =?", (allow, allow_admin, id_resume))
 
-    def why_get_admin(self, ) -> list:
+    # def why_get_admin(self, user_id) -> list:
+    #     with self.connection:
+    #         self.cursor.execute('''
+    #             SELECT tg_id FROM tg_users
+    #             WHERE admin = ?
+    #         ''', (True,))
+    #     return [admin[0] for admin in self.cursor.fetchall()]
+
+    def why_get_admin(self, user_id) -> bool:
         with self.connection:
-            self.cursor.execute('''
-                SELECT tg_id FROM tg_users
-                WHERE admin = ?
-            ''', (True,))
-        return [admin[0] for admin in self.cursor.fetchall()]
+            # print(self.cursor.execute("SELECT `admin` FROM `tg_users` WHERE `tg_id` =?", (user_id)))
+            return self.cursor.execute("SELECT `admin` FROM `tg_users` WHERE `tg_id` =?", (user_id,)).fetchone()[0]
+
 
     def get_admin(self, user_id, allow_admin) -> list:
         with self.connection:

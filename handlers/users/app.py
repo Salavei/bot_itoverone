@@ -11,7 +11,7 @@ from filters import IsAdmin
 async def bot_start(message: types.Message):
     if not db.check_subscriber(message.from_user.id):
         db.add_subscriber(message.from_user.id)
-    await message.answer(f'Привет, {message.from_user.full_name}! Чтобы узнать правила использования введи /help',
+    await message.answer(f'Привет, быстрее начни мной пользоваться!',
                          reply_markup=keyboard)
 
 #admin hendler
@@ -19,11 +19,15 @@ async def bot_start(message: types.Message):
 @dp.message_handler(commands=['admin'])
 async def command_start(message: types.Message):
     if not await IsAdmin().check(message):
-        db.get_admin(message.from_user.id, True)
-        await message.answer('Вход в админ режим', reply_markup=keyboard_admin)
+        if not db.why_get_admin(message.from_user.id):
+            db.get_admin(message.from_user.id, True)
+            await message.answer('⚠️ Вход в админ режим ⚠️', reply_markup=keyboard_admin)
+        else:
+            db.get_admin(message.from_user.id, False)
+            await message.answer('❌ Выход из админ режима ❌', reply_markup=keyboard)
     else:
         db.get_admin(message.from_user.id, False)
-        await message.answer('Выход из админ режима', reply_markup=keyboard)
+        await message.answer('❌ Вы не админ, команда не будет работать ❌', reply_markup=keyboard)
 
 
 from keyboards.inline.keyboards import *
@@ -39,12 +43,12 @@ from keyboards.inline.keyboards import *
 
 async def get_all_resume_for_adm(bot, message: types.Message):
     if not db.get_resume_for_adm():
-        await message.answer(f'Нет резюме для апрува !!')
+        await message.answer(f'❌ Нет резюме для апрува ‼️')
     else:
         for unp in db.get_resume_for_adm():
             id_resume, name, skills, area_of_residence, phone, allow, _, _, _ = unp
             await message.answer(
-                f"Имя: {name}\nНавыки: {skills}\nРайон проживания: {area_of_residence}\nНомер телефона: {phone}",
+                f"👤 Имя: {name}\n🪛 Навыки: {skills}\n🌍 Район проживания: {area_of_residence}\n☎️ Номер телефона: {phone}",
                 reply_markup=await get_confirm_admin_resume(id_resume))
 
 
@@ -52,11 +56,11 @@ async def get_all_resume_for_adm(bot, message: types.Message):
 
 async def get_all_announcement_for_adm(bot, message: types.Message):
     if not db.get_announcement_for_adm():
-        await message.answer(f'Нет объявлений для апрува !!')
+        await message.answer(f'❌ Нет объявлений для апрува ‼️')
     else:
         for unp in db.get_announcement_for_adm():
             id, type_of_services, job_title, job_description, salary, phone, allow, _, _, _ = unp
-            await message.answer(f"Тип: {type_of_services}\nНазвание вакансии: {job_title}\nОписание вакансии: {job_description}\nЗаработная Плата: {salary}\nНомер телефона: {phone}",
+            await message.answer(f"Тип: {type_of_services}\nНазвание вакансии: {job_title}\nОписание вакансии: {job_description}\n💰 Заработная Плата: {salary}\n☎️ Номер телефона: {phone}",
                                    reply_markup=await get_confirm_announcement_admin(id))
 
 

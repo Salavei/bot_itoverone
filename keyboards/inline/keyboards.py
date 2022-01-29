@@ -1,14 +1,13 @@
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
 button = InlineKeyboardMarkup()
-
-inline_btn_edit = InlineKeyboardButton('Изменить', callback_data='edit')
-inline_btn_stop_activ = InlineKeyboardButton('Остановить/Активировать', callback_data='stop_activ',)
-inline_btn_edit_one = InlineKeyboardButton('Изменить(1)', callback_data='edit_one')
-inline_btn_work = InlineKeyboardButton('Работа', callback_data='work')
-inline_btn_so_work = InlineKeyboardButton('Подработка', callback_data='so_work')
-inline_btn_create_one = InlineKeyboardButton('Создать', callback_data='create_one')
-inline_btn_confirm = InlineKeyboardButton('Одобрить', callback_data='confirm')
+# inline_btn_edit = InlineKeyboardButton('Изменить', callback_data='edit')
+# inline_btn_stop_activ = InlineKeyboardButton('Остановить/Активировать', callback_data='stop_activ',)
+# inline_btn_edit_one = InlineKeyboardButton('Изменить(1)', callback_data='edit_one')
+# inline_btn_work = InlineKeyboardButton('Работа', callback_data='work')
+# inline_btn_so_work = InlineKeyboardButton('Подработка', callback_data='so_work')
+# inline_btn_create_one = InlineKeyboardButton('Создать', callback_data='create_one')
+# inline_btn_confirm = InlineKeyboardButton('Одобрить', callback_data='confirm')
 
 
 async def get_announce_edit(id, allow) -> InlineKeyboardMarkup:
@@ -28,7 +27,7 @@ async def get_announce_create() -> InlineKeyboardMarkup:
         row_width=1,
         inline_keyboard=[
             [
-                InlineKeyboardButton('Создать', callback_data='create'),
+                InlineKeyboardButton('⚙️ Создать', callback_data='create'),
             ]
 
         ]
@@ -41,7 +40,7 @@ async def get_resumes_edit_keyboard(start_stop_state,id_resume) -> InlineKeyboar
         inline_keyboard=[
             [
                 InlineKeyboardButton(text=f'{start_stop_state}', callback_data=f'start_stop_{id_resume}',), #Остановить/Активировать
-                InlineKeyboardButton('Изменить', callback_data='edit_one'),
+                InlineKeyboardButton('⚙️ Изменить', callback_data='edit_one'),
              ]
         ]
     )
@@ -52,7 +51,7 @@ async def get_resumes_none() -> InlineKeyboardMarkup:
         row_width=1,
         inline_keyboard=[
             [
-                InlineKeyboardButton('Создать', callback_data='edit_one'),
+                InlineKeyboardButton('⚙️ Создать', callback_data='edit_one'),
              ]
         ]
     )
@@ -64,7 +63,7 @@ async def get_announcement_admin() -> InlineKeyboardMarkup:
         row_width=1,
         inline_keyboard=[
             [
-                InlineKeyboardButton('Одобрить', callback_data='confirm'),
+                InlineKeyboardButton('✅ Одобрить', callback_data='confirm'),
              ]
         ]
     )
@@ -75,8 +74,8 @@ async def get_confirm_admin_resume(id_resume) -> InlineKeyboardMarkup:
         row_width=2,
         inline_keyboard=[
             [
-                InlineKeyboardButton('Одобрить', callback_data=f'confirm_r_admin_{id_resume}'),
-                InlineKeyboardButton('Отклонить', callback_data=f'reject_r_admin_{id_resume}')
+                InlineKeyboardButton('✅ Одобрить', callback_data=f'confirm_r_admin_{id_resume}'),
+                InlineKeyboardButton('❌ Отклонить', callback_data=f'reject_r_admin_{id_resume}')
              ]
         ]
     )
@@ -87,8 +86,8 @@ async def get_confirm_announcement_admin(id_announcement) -> InlineKeyboardMarku
         row_width=2,
         inline_keyboard=[
             [
-                InlineKeyboardButton('Одобрить', callback_data=f'confirm_a_admin_{id_announcement}'),
-                InlineKeyboardButton('Отклонить', callback_data=f'reject_a_admin_{id_announcement}')
+                InlineKeyboardButton('✅ Одобрить', callback_data=f'confirm_a_admin_{id_announcement}'),
+                InlineKeyboardButton('❌ Отклонить', callback_data=f'reject_a_admin_{id_announcement}')
              ]
         ]
     )
@@ -100,8 +99,8 @@ async def add_announcement() -> InlineKeyboardMarkup:
         row_width=2,
         inline_keyboard=[
             [
-                InlineKeyboardButton('Работа', callback_data='work'),
-                InlineKeyboardButton('Подработка', callback_data='so_work'),
+                InlineKeyboardButton('👔 Работа', callback_data='work'),
+                InlineKeyboardButton('🦺 Подработка', callback_data='so_work'),
              ]
         ]
     )
