@@ -70,12 +70,25 @@ async def get_announcement_admin() -> InlineKeyboardMarkup:
     )
     return keyboard
 
-async def get_announcement_admin_resume(id_resume) -> InlineKeyboardMarkup:
+async def get_confirm_admin_resume(id_resume) -> InlineKeyboardMarkup:
     keyboard = InlineKeyboardMarkup(
-        row_width=1,
+        row_width=2,
         inline_keyboard=[
             [
-                InlineKeyboardButton('Одобрить', callback_data=f'confirm_resume_{id_resume}'),
+                InlineKeyboardButton('Одобрить', callback_data=f'confirm_r_admin_{id_resume}'),
+                InlineKeyboardButton('Отклонить', callback_data=f'reject_r_admin_{id_resume}')
+             ]
+        ]
+    )
+    return keyboard
+
+async def get_confirm_announcement_admin(id_announcement) -> InlineKeyboardMarkup:
+    keyboard = InlineKeyboardMarkup(
+        row_width=2,
+        inline_keyboard=[
+            [
+                InlineKeyboardButton('Одобрить', callback_data=f'confirm_a_admin_{id_announcement}'),
+                InlineKeyboardButton('Отклонить', callback_data=f'reject_a_admin_{id_announcement}')
              ]
         ]
     )
@@ -95,15 +108,15 @@ async def add_announcement() -> InlineKeyboardMarkup:
     return keyboard
 
 
-async def verifying_announcement(id_conf) -> InlineKeyboardMarkup:
-    keyboard = InlineKeyboardMarkup(
-        row_width=1,
-        inline_keyboard=[
-            [
-                # InlineKeyboardButton('Подтвердить', callback_data='verifying_ann'), #id_conf
-                InlineKeyboardButton(text='Подтвердить', callback_data=f'announcement_{id_conf}', )
-             ]
-        ]
-    )
-    return keyboard
+# async def verifying_announcement(id_conf) -> InlineKeyboardMarkup:
+#     keyboard = InlineKeyboardMarkup(
+#         row_width=1,
+#         inline_keyboard=[
+#             [
+#                 # InlineKeyboardButton('Подтвердить', callback_data='verifying_ann'), #id_conf
+#                 InlineKeyboardButton(text='Подтвердить', callback_data=f'announcement_{id_conf}', )
+#              ]
+#         ]
+#     )
+#     return keyboard
 

@@ -78,6 +78,10 @@ class SQLighter:
         with self.connection:
             return self.cursor.execute("SELECT * FROM `tg_my_resume` WHERE `allow` = ?", (allow,)).fetchall()
 
+    def get_announcement_for_adm(self, allow=False) -> list:
+        with self.connection:
+            return self.cursor.execute("SELECT * FROM `tg_my_announcements` WHERE `allow` = ?", (allow,)).fetchall()
+
     def stop_resume(self, user_id, resume_id=None):
         with self.connection:
             take_id = self.cursor.execute("SELECT `id` FROM `tg_users` WHERE `tg_id` =?", (int(user_id),)).fetchall()
@@ -99,7 +103,8 @@ class SQLighter:
     def check_announcements(self, id_resume: int) -> bool:
         with self.connection:
             return \
-            self.cursor.execute("SELECT `allow` FROM `tg_my_announcements` WHERE `id` = ?", (id_resume,)).fetchone()[0]
+                self.cursor.execute("SELECT `allow` FROM `tg_my_announcements` WHERE `id` = ?",
+                                    (id_resume,)).fetchone()[0]
             # return bool(self.cursor)
 
     def start_my_resume(self, id_resume: int) -> bool:
@@ -122,6 +127,14 @@ class SQLighter:
     def get_admin(self, user_id, allow_admin) -> list:
         with self.connection:
             return self.cursor.execute("UPDATE `tg_users` SET `admin` = ? WHERE `tg_id` =?", (allow_admin, user_id))
+
+    def reject_db_resume_admin(self, id_resume):
+        with self.connection:
+            return self.cursor.execute("DELETE FROM `tg_my_resume` WHERE `id` =?", (id_resume,))
+
+    def reject_db_announcement_admin(self, id_resume):
+        with self.connection:
+            return self.cursor.execute("DELETE FROM `tg_my_announcements` WHERE `id` =?", (id_resume,))
 
     def close(self):
         """Закрываем соединение с БД"""

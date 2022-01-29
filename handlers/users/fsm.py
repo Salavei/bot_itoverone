@@ -24,7 +24,6 @@ async def cm_start1(callback_query: types.CallbackQuery):
 
 @dp.callback_query_handler(lambda call: "work" or "so_work" in call.data, state=FSMAannouncement.type_of_services)
 async def choice_work_user(call: types.CallbackQuery, state: FSMContext):
-    # добавить проверку на то, точно ли work or so_work , а не текст с клавы
     choice = {
         'work': 'Работа',
         'so_work': 'Подработка'

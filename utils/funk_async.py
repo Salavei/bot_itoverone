@@ -13,8 +13,6 @@ async def all_my_announcement(bot, message: types.Message):
     elif not db.get_announcements_all():
         await bot.send_message(message.from_user.id, f'Объявлений нет!!')
     else:
-        keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True)
-        keyboard.add(btnprivacy,btnoffers,btnannouncement,btnresume,btn_all_resume)
         for unp in db.get_announcements_all():
             _, type_of_services, job_title, job_description, salary, phone, allow, _, _ = unp
             await bot.send_message(message.from_user.id,
@@ -39,19 +37,7 @@ async def my_announcement(bot, message: types.Message):
         await bot.send_message(message.from_user.id, text='Создать обьявление:', reply_markup=await get_announce_create())
 
 
-async def get_all_resume_for_adm(message: types.Message):
-    if not db.get_resume_for_adm():
-        await message.answer(f'Нет резюме для апрува !!')
-    else:
-        for unp in db.get_resume_for_adm():
-            id_resume, name, skills, area_of_residence, phone, allow, _, _ = unp
-            await message.answer(
-                f"Имя: {name}\nНавыки: {skills}\nРайон проживания: {area_of_residence}\nНомер телефона: {phone}",
-                reply_markup=await get_announcement_admin_resume(id_resume))
-    await message.answer(text='Вы админ')
-
-
-async def get_my_resume(message: types.Message):
+async def get_all_resume(bot, message: types.Message):
     if not db.get_resume_all():
         await message.answer( f'Резюме нет!!')
     else:
@@ -77,11 +63,5 @@ async def my_resume(bot, message: types.Message):
                                    reply_markup=await get_resumes_edit_keyboard(get_allow[allow], id_resume))
 
 
-async def all_resume(bot, message: types.Message):
-    data = {
-        True: get_all_resume_for_adm,
-        False: get_my_resume,
-    }
-    await data[await IsAdmin().check(message)](message)
 
 
