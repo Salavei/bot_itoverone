@@ -14,7 +14,7 @@ async def all_my_announcement(bot, message: types.Message):
         await bot.send_message(message.from_user.id, f'Объявлений нет!!')
     else:
         for unp in db.get_announcements_all():
-            _, type_of_services, job_title, job_description, salary, phone, allow, _, _ = unp
+            _, type_of_services, job_title, job_description, salary, phone, allow, _, _, _ = unp
             await bot.send_message(message.from_user.id,
                                    f"Тип: {type_of_services}\nНазвание вакансии: {job_title}\nОписание вакансии: {job_description}\nЗаработная Плата: {salary}\nНомер телефона: {salary}",
                                    )
@@ -26,7 +26,7 @@ async def my_announcement(bot, message: types.Message):
         await bot.send_message(message.from_user.id, f'Нужно создать объявление', reply_markup=await get_announce_create())
     else:
         for unp in db.get_announcements_my(message.from_user.id):
-            id, type_of_services, job_title, job_description, salary, phone, allow, _, _ = unp
+            id, type_of_services, job_title, job_description, salary, phone, allow, _, _, _ = unp
             get_allow = {
                 True: 'Остановить',
                 False: 'Активировать',
@@ -42,7 +42,7 @@ async def get_all_resume(bot, message: types.Message):
         await message.answer( f'Резюме нет!!')
     else:
         for unp in db.get_resume_all():
-            _, name, skills, area_of_residence, phone, _, _, _ = unp
+            _, name, skills, area_of_residence, phone, _, _, _, _ = unp
             await message.answer(
                                    f"Имя: {name}\nНавыки: {skills}\nРайон проживания: {area_of_residence}\nНомер телефона: {phone}",
                                    reply_markup=button)
@@ -53,7 +53,7 @@ async def my_resume(bot, message: types.Message):
         await bot.send_message(message.from_user.id, f'У вас нет резюме!!',reply_markup=await get_resumes_none())
     else:
         for unp in db.get_resume_my(message.from_user.id):
-            id_resume, name, skills, area_of_residence, phone, allow, _, _ = unp
+            id_resume, name, skills, area_of_residence, phone, allow, _, _, _ = unp
             get_allow = {
                 True: 'Остановить',
                 False: 'Активировать',

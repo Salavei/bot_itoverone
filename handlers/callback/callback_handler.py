@@ -22,7 +22,7 @@ async def approve_announcement_user(call: types.CallbackQuery):
 # ADMIN CALLBACK
 @dp.callback_query_handler(lambda call: 'confirm_r_admin_' in call.data)
 async def approve_resume_admin(call: types.CallbackQuery):
-    db.confirm_my_resume(call.data.split('_')[-1])
+    db.confirm_resume_admin(call.data.split('_')[-1])
     await call.message.edit_text(text="Апрув резюме")
 
 
@@ -33,7 +33,7 @@ async def reject_resume_admin(call: types.CallbackQuery):
 
 @dp.callback_query_handler(lambda call: 'confirm_a_admin_' in call.data)
 async def approve_announcement_admin(call: types.CallbackQuery):
-    db.confirm_announcements(call.data.split('_')[-1])
+    db.confirm_announcements_admin(call.data.split('_')[-1])
     await call.message.edit_text(text="Апрув объявления")
 
 

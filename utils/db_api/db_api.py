@@ -9,22 +9,22 @@ class SQLighter:
         self.connection = sqlite3.connect(database)
         self.cursor = self.connection.cursor()
 
-    def add_announcements(self, type_of_services, job_title, job_description, salary, phone, user_id, allow=False):
+    def add_announcements(self, type_of_services, job_title, job_description, salary, phone, user_id, allow=False, allow_admin=False):
         with self.connection:
             print(phone)
             return self.cursor.execute(
                 "INSERT INTO `tg_my_announcements` (`type_of_services`,`job_title`,`job_description`,"
-                "`salary`,`phone`,`allow`, `date_time`, `user_id_id`) VALUES(?,?,?,?,?,?,?,?)",
+                "`salary`,`phone`,`allow`, `date_time`, `user_id_id`, `allow_admin`) VALUES(?,?,?,?,?,?,?,?,?)",
                 (type_of_services, job_title,
-                 job_description, salary, phone, allow, datetime.datetime.now(), user_id))
+                 job_description, salary, phone, allow, datetime.datetime.now(), user_id, allow_admin))
 
-    def get_announcements_all(self, allow=True):
+    def get_announcements_all(self, allow_admin=True):
         with self.connection:
-            return self.cursor.execute("SELECT * FROM `tg_my_announcements` WHERE `allow` = ?", (allow,)).fetchall()
+            return self.cursor.execute("SELECT * FROM `tg_my_announcements` WHERE `allow_admin` = ?", (allow_admin,)).fetchall()
 
-    def get_admin_announcements_all(self, allow=False):
+    def get_admin_announcements_all(self, allow_admin=False):
         with self.connection:
-            return self.cursor.execute("SELECT * FROM `tg_my_announcements` WHERE `allow` = ?", (allow,)).fetchall()
+            return self.cursor.execute("SELECT * FROM `tg_my_announcements` WHERE `allow_admin` = ?", (allow_admin,)).fetchall()
 
     def get_announcements_my(self, user_id):
         with self.connection:
@@ -50,39 +50,39 @@ class SQLighter:
         with self.connection:
             return self.cursor.execute("INSERT INTO `tg_users` (`id`,`tg_id`) VALUES(?,?)", (int(nums) + 1, user_id))
 
-    def add_resume(self, name, skills, area_of_residence, phone, user_id, allow=False):
+    def add_resume(self, name, skills, area_of_residence, phone, user_id, allow=False, allow_admin=False):
         with self.connection:
             return self.cursor.execute(
                 "INSERT INTO `tg_my_resume` (`name`,`skills`,`area_of_residence`,"
-                "`phone`,`allow`, `date_time`, `user_id_id`) VALUES(?,?,?,?,?,?,?)",
+                "`phone`,`allow`, `date_time`, `user_id_id`, `allow_admin`) VALUES(?,?,?,?,?,?,?,?)",
                 (name, skills,
-                 area_of_residence, phone, allow, datetime.datetime.now(), user_id))
+                 area_of_residence, phone, allow, datetime.datetime.now(), user_id, allow_admin))
 
-    def get_resume_all(self, allow=True):
+    def get_resume_all(self, allow_admin=True):
         with self.connection:
-            return self.cursor.execute("SELECT * FROM `tg_my_resume` WHERE `allow` = ? ORDER BY `date_time` DESC",
-                                       (allow,)).fetchall()
+            return self.cursor.execute("SELECT * FROM `tg_my_resume` WHERE `allow_admin` = ? ORDER BY `date_time` DESC",
+                                       (allow_admin,)).fetchall()
 
-    def update_resume_my(self, name, skills, area_of_residence, phone, user_id, allow=True):
+    def update_resume_my(self, name, skills, area_of_residence, phone, user_id, allow=True, allow_admin=False):
         with self.connection:
             return self.cursor.execute(
-                "UPDATE `tg_my_resume` SET `name` = ? ,`skills` = ? ,`area_of_residence` = ?,`phone` = ? ,`allow` = ?, `date_time` = ?, `user_id_id` = ? WHERE `user_id_id` = ?",
+                "UPDATE `tg_my_resume` SET `name` = ? ,`skills` = ? ,`area_of_residence` = ?,`phone` = ? ,`allow` = ?, `date_time` = ?, `user_id_id`, `allow_admin` = ? WHERE `user_id_id` = ?",
                 (name, skills,
-                 area_of_residence, phone, allow, datetime.datetime.now(), user_id, user_id))
+                 area_of_residence, phone, allow, datetime.datetime.now(), user_id, user_id, allow_admin))
 
     def get_resume_my(self, user_id: int) -> list:
         with self.connection:
             return self.cursor.execute("SELECT * FROM `tg_my_resume` WHERE `user_id_id` = ?", (user_id,)).fetchall()
 
-    def get_resume_for_adm(self, allow=False) -> list:
+    def get_resume_for_adm(self, allow_admin=False) -> list:
         with self.connection:
-            return self.cursor.execute("SELECT * FROM `tg_my_resume` WHERE `allow` = ?", (allow,)).fetchall()
+            return self.cursor.execute("SELECT * FROM `tg_my_resume` WHERE `allow_admin` = ?", (allow_admin,)).fetchall()
 
-    def get_announcement_for_adm(self, allow=False) -> list:
+    def get_announcement_for_adm(self, allow_admin=False) -> list:
         with self.connection:
-            return self.cursor.execute("SELECT * FROM `tg_my_announcements` WHERE `allow` = ?", (allow,)).fetchall()
+            return self.cursor.execute("SELECT * FROM `tg_my_announcements` WHERE `allow_admin` = ?", (allow_admin,)).fetchall()
 
-    def stop_resume(self, user_id, resume_id=None):
+    def stop_resume(self, user_id,):
         with self.connection:
             take_id = self.cursor.execute("SELECT `id` FROM `tg_users` WHERE `tg_id` =?", (int(user_id),)).fetchall()
             pars = self.cursor.execute("UPDATE `tg_my_resume` SET `allow` = ? WHERE `id` = ?", (0, *take_id[0],))
@@ -96,15 +96,13 @@ class SQLighter:
         with self.connection:
             return self.cursor.execute("UPDATE `tg_my_announcements` SET `allow` = ? WHERE `id` =?", (True, id_conf))
 
-    def update_announcements(self, id_conf: int, allow) -> list:
+    def update_announcements(self, id_conf: int, allow, allow_admin=False) -> list:
         with self.connection:
-            return self.cursor.execute("UPDATE `tg_my_announcements` SET `allow` = ? WHERE `id` =?", (allow, id_conf))
+            return self.cursor.execute("UPDATE `tg_my_announcements` SET `allow` = ?, `allow_admin` = ?  WHERE `id` =?", (allow, allow_admin, id_conf))
 
     def check_announcements(self, id_resume: int) -> bool:
         with self.connection:
-            return \
-                self.cursor.execute("SELECT `allow` FROM `tg_my_announcements` WHERE `id` = ?",
-                                    (id_resume,)).fetchone()[0]
+            return self.cursor.execute("SELECT `allow` FROM `tg_my_announcements` WHERE `id` = ?",(id_resume,)).fetchone()[0]
             # return bool(self.cursor)
 
     def start_my_resume(self, id_resume: int) -> bool:
@@ -112,9 +110,9 @@ class SQLighter:
             return self.cursor.execute("SELECT `allow` FROM `tg_my_resume` WHERE `id` = ?", (id_resume,)).fetchone()[0]
             # return bool(self.cursor)
 
-    def update__my_resume(self, id_resume, allow: int) -> list:
+    def update__my_resume(self, id_resume: int, allow, allow_admin=False) -> list:
         with self.connection:
-            return self.cursor.execute("UPDATE `tg_my_resume` SET `allow` = ? WHERE `id` =?", (allow, id_resume))
+            return self.cursor.execute("UPDATE `tg_my_resume` SET `allow` = ?, `allow_admin` = ? WHERE `id` =?", (allow, allow_admin, id_resume))
 
     def why_get_admin(self, ) -> list:
         with self.connection:
@@ -135,6 +133,15 @@ class SQLighter:
     def reject_db_announcement_admin(self, id_resume):
         with self.connection:
             return self.cursor.execute("DELETE FROM `tg_my_announcements` WHERE `id` =?", (id_resume,))
+
+    def confirm_resume_admin(self, id_conf: int) -> list:
+        with self.connection:
+            return self.cursor.execute("UPDATE `tg_my_resume` SET `allow_admin` = ? WHERE `id` =?", (True, id_conf))
+
+    def confirm_announcements_admin(self, id_conf: int) -> list:
+        with self.connection:
+            return self.cursor.execute("UPDATE `tg_my_announcements` SET `allow_admin` = ? WHERE `id` =?", (True, id_conf))
+
 
     def close(self):
         """Закрываем соединение с БД"""

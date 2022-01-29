@@ -37,12 +37,12 @@ from keyboards.inline.keyboards import *
 #     await data[await IsAdmin().check(message)](message)
 
 
-async def get_all_resume_for_adm(message: types.Message):
+async def get_all_resume_for_adm(bot, message: types.Message):
     if not db.get_resume_for_adm():
         await message.answer(f'Нет резюме для апрува !!')
     else:
         for unp in db.get_resume_for_adm():
-            id_resume, name, skills, area_of_residence, phone, allow, _, _ = unp
+            id_resume, name, skills, area_of_residence, phone, allow, _, _, _ = unp
             await message.answer(
                 f"Имя: {name}\nНавыки: {skills}\nРайон проживания: {area_of_residence}\nНомер телефона: {phone}",
                 reply_markup=await get_confirm_admin_resume(id_resume))
@@ -50,12 +50,12 @@ async def get_all_resume_for_adm(message: types.Message):
 
 #ОБьявления для апрува от админа
 
-async def get_all_announcement_for_adm(message: types.Message):
+async def get_all_announcement_for_adm(bot, message: types.Message):
     if not db.get_announcement_for_adm():
         await message.answer(f'Нет объявлений для апрува !!')
     else:
         for unp in db.get_announcement_for_adm():
-            id, type_of_services, job_title, job_description, salary, phone, allow, _, _ = unp
+            id, type_of_services, job_title, job_description, salary, phone, allow, _, _, _ = unp
             await message.answer(f"Тип: {type_of_services}\nНазвание вакансии: {job_title}\nОписание вакансии: {job_description}\nЗаработная Плата: {salary}\nНомер телефона: {phone}",
                                    reply_markup=await get_confirm_announcement_admin(id))
 
@@ -93,4 +93,4 @@ async def command_start_text(message: types.Message):
         'Конфиденциальность': send_privacy,
     }
     await data.get(message.text, error)(bot, message)
-    await data_admin.get(message.text, error)(message)
+    await data_admin.get(message.text, error)(bot, message)

@@ -123,10 +123,13 @@ async def load_phone(message: types.Message, state: FSMContext):
     async with state.proxy() as data:
         data['phone'] = message.text
     await message.answer('Резюме добавлено')
-    data = {
+    data_d = {
         True: db.update_resume_my,
         False: db.add_resume
     }
-    await data[bool(db.get_resume_my(message.from_user.id))](data['name'], data['skills'], data['area_of_residence'],
+    print(data)
+    #TypeError: object sqlite3.Cursor can't be used in 'await' expression
+    bool_db = bool(db.get_resume_my(message.from_user.id))
+    await data_d[bool_db](data['name'], data['skills'], data['area_of_residence'],
                                                              data['phone'], user_id=message.from_user.id)
     await state.finish()
