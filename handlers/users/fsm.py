@@ -135,8 +135,4 @@ async def load_phone(message: types.Message, state: FSMContext):
         False: db.add_resume
     }
     await data[bool(db.get_resume_my(message.from_user.id))](data['name'], data['skills'], data['area_of_residence'], data['phone'], user_id=message.from_user.id)
-    # if db.get_resume_my(message.from_user.id):
-    #     db.update_resume_my(data['name'], data['skills'], data['area_of_residence'], data['phone'], user_id=message.from_user.id)
-    # else:
-    #     db.add_resume(data['name'], data['skills'], data['area_of_residence'], data['phone'], user_id=message.from_user.id)
     await state.finish()

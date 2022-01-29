@@ -93,22 +93,23 @@ class SQLighter:
 
     def update_announcements(self, id_conf: int, allow) -> list:
         with self.connection:
+            print('Отработало', allow)
             return self.cursor.execute("UPDATE `tg_my_announcements` SET `allow` = ? WHERE `id` =?", (allow,id_conf))
 
     def check_announcements(self, id_resume: int) -> bool:
         with self.connection:
-            self.cursor.execute("SELECT `allow` FROM `tg_my_announcements` WHERE `id` = ?", (id_resume, ))
-            return bool(self.cursor.fetchone()[0])
+            return self.cursor.execute("SELECT `allow` FROM `tg_my_announcements` WHERE `id` = ?", (id_resume, )).fetchone()[0]
+            # return bool(self.cursor)
 
     def start_my_resume(self, id_resume: int) -> bool:
         with self.connection:
-            self.cursor.execute("SELECT `allow` FROM `tg_my_resume` WHERE `id` = ?", (id_resume, ))
-            return bool(self.cursor.fetchone()[0])
+            return self.cursor.execute("SELECT `allow` FROM `tg_my_resume` WHERE `id` = ?", (id_resume, )).fetchone()[0]
+            # return bool(self.cursor)
 
-    def end_my_resume(self, id_resume, allow: int) -> list:
+    def update__my_resume(self, id_resume, allow: int) -> list:
         with self.connection:
+            print('Отработало', allow)
             return self.cursor.execute("UPDATE `tg_my_resume` SET `allow` = ? WHERE `id` =?", (allow,id_resume))
-
 
 
     def why_get_admin(self,) -> list:

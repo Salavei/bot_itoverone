@@ -11,7 +11,6 @@ inline_btn_create_one = InlineKeyboardButton('Создать', callback_data='cr
 inline_btn_confirm = InlineKeyboardButton('Одобрить', callback_data='confirm')
 
 
-
 async def get_announce_edit(id, allow) -> InlineKeyboardMarkup:
     keyboard = InlineKeyboardMarkup(
         row_width=1,

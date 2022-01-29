@@ -21,5 +21,5 @@ if __name__ == '__main__':
     print('Start bot...')
     from handlers.users.app import dp
     from handlers.users.fsm import dp
-
+    from handlers.callback.callback_handler import dp
     executor.start_polling(dp, skip_updates=True)
